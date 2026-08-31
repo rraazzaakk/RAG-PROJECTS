@@ -25,21 +25,10 @@ target_labels = [
 
 filtered = train_data.filter(lambda row: row["label"] in target_labels)
 
-small_list = []
-
-for label in target_labels:
-    matches = filtered.filter(lambda row: row["label"] == label)
-    example_files = sorted(set(matches["file_name"]))[:2]
-    
-    small_list.extend(example_files)
-    # print(label, "->", example_files)
-    
-deduplicated_list = list(set(small_list))
-filtered_final = filtered.filter(lambda row: row["file_name"] in deduplicated_list)
 
 documents = []
 
-for row in filtered_final:
+for row in filtered:
     docs=Document(
         text = row["clause"],
         metadata = {"file name" : row["file_name"] , "label" : row["label"] }
@@ -58,6 +47,7 @@ while True:
     if user_input.lower() == "exit":
         break
     response = chat_engine.chat(user_input)
+    print("bot: ", response)
 
     q_c = []
 
