@@ -59,7 +59,7 @@ chat_engine = index.as_chat_engine(similarity_top_k=20)
 reranker_model = load_reranker()
 
 
-st.title("CUAD Legal Clause Reranker Comparison")
+st.title("Smart Contract Search")
 st.write("Ask a question about the loaded contract clauses (Governing Law, Termination For Convenience, Cap On Liability, Uncapped Liability, Non-Compete).")
 
 st.write("**Try an example question:**")
