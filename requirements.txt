@@ -4,3 +4,6 @@ llama-index-llms-google-genai
 llama-index-embeddings-google-genai
 sentence-transformers
 streamlit
+beautifulsoup4
+requests
+pypdf
