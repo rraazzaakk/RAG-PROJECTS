@@ -12,7 +12,7 @@ import os
 gemini_api_key = os.environ.get("GEMINI_API_KEY")
 groq_api_key = os.environ.get("GROQ_API_KEY")
 
-Settings.llm = Groq(model="llama-3.3-70b-versatile", api_key=groq_api_key)
+Settings.llm = Groq(model="openai/gpt-oss-120b", api_key=groq_api_key)
 Settings.embed_model = GoogleGenAIEmbedding(model_name="gemini-embedding-2-preview", api_key=gemini_api_key)
 
 
@@ -118,7 +118,10 @@ system_prompt = (
     "answers with headings or bullet points to make them easy to read."
 )
 
-chat_engine = index.as_chat_engine(similarity_top_k=8 , system_prompt =system_prompt)
+if "chat_engine" not in st.session_state:
+    st.session_state.chat_engine = index.as_chat_engine(similarity_top_k=15, system_prompt=system_prompt)
+
+chat_engine = st.session_state.chat_engine
 st.title("Adeleke University AI Assistant")
 st.write("Ask a question about programs, faculties, tuition, scholarships, and campus life at Adeleke University.")
 
@@ -147,7 +150,7 @@ if user_input:
                 response = chat_engine.chat(user_input)
                 answer = str(response)
             except Exception as e:
-                answer = "Something went wrong retrieving an answer. Please try again in a moment."
+                answer = f"Something went wrong: {e}"
         st.write(answer)
 
     st.session_state.messages.append({"role": "assistant", "content": answer})
