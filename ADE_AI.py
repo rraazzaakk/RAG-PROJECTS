@@ -123,15 +123,32 @@ chat_engine = index.as_chat_engine(similarity_top_k=8 , system_prompt =system_pr
 st.title("Adeleke University AI Assistant")
 st.write("Ask a question about programs, faculties, tuition, scholarships, and campus life at Adeleke University.")
 
-user_input = st.text_input("Your question:")
+# Keep conversation history across reruns
+if "messages" not in st.session_state:
+    st.session_state.messages = []
 
-if st.button("Ask") and user_input:
-    with st.spinner("Thinking..."):
-        try:
-            response = chat_engine.chat(user_input)
-        except Exception as e:
-            st.error("Something went wrong retrieving an answer. Please try again in a moment.")
-            st.stop()
+# Redisplay the full conversation history so far
+for msg in st.session_state.messages:
+    with st.chat_message(msg["role"]):
+        st.write(msg["content"])
 
-        st.subheader("Answer")
-        st.write(str(response))
+# Chat input box, sits at the bottom, submits on Enter
+user_input = st.chat_input("Ask ADE a question...")
+
+if user_input:
+    # Show and store the user's message
+    with st.chat_message("user"):
+        st.write(user_input)
+    st.session_state.messages.append({"role": "user", "content": user_input})
+
+    # Get and show ADE's response
+    with st.chat_message("assistant"):
+        with st.spinner("Thinking..."):
+            try:
+                response = chat_engine.chat(user_input)
+                answer = str(response)
+            except Exception as e:
+                answer = "Something went wrong retrieving an answer. Please try again in a moment."
+        st.write(answer)
+
+    st.session_state.messages.append({"role": "assistant", "content": answer})
