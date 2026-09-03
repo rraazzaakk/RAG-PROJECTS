@@ -84,7 +84,7 @@ if (ask_clicked or example_clicked) and user_input:
         try:
             response = chat_engine.chat(user_input)
         
-        except Exceptiona as e:
+        except Exception as e:
                 st.error("Something went wrong retrieving an answer. Please try again in a moment.")
                 st.stop()
 

@@ -1,20 +1,19 @@
 import requests
 from bs4 import BeautifulSoup
 import time
-from llama_index.core import SimpleDirectoryReader, VectorStoreIndex, Settings,Document
-from llama_index.core.node_parser import SentenceSplitter
-from llama_index.llms.google_genai import GoogleGenAI
+from llama_index.core import VectorStoreIndex, Settings, Document
+from llama_index.llms.groq import Groq
 from llama_index.embeddings.google_genai import GoogleGenAIEmbedding
-from sentence_transformers import CrossEncoder
 import streamlit as st
 import pypdf
 from io import BytesIO
 import os
 
-api_key = os.environ.get("GEMINI_API_KEY")
+gemini_api_key = os.environ.get("GEMINI_API_KEY")
+groq_api_key = os.environ.get("GROQ_API_KEY")
 
-Settings.llm = GoogleGenAI(model="gemini-3.6-flash", api_key=api_key)
-Settings.embed_model = GoogleGenAIEmbedding(model_name="gemini-embedding-2-preview", api_key=api_key)
+Settings.llm = Groq(model="llama-3.3-70b-versatile", api_key=groq_api_key)
+Settings.embed_model = GoogleGenAIEmbedding(model_name="gemini-embedding-2-preview", api_key=gemini_api_key)
 
 
 def scrape_page(url):
