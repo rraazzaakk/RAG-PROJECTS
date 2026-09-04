@@ -3,7 +3,7 @@ RAG Projects
 A collection of Retrieval-Augmented Generation (RAG) projects, built progressively from first principles to increasingly complex, real-world applications. Each project was built, tested, and debugged end-to-end. This includes diagnosing real bugs, hitting real API constraints, and documenting genuine limitations rather than just showcasing what worked.
 
 Projects
-ADE - Adeleke University AI Assistant (ADE_AI.py)
+ADE - Adeleke University AI Assistant (ADE_AI.py)(https://adeleke.streamlit.app/)
 
 A chatbot that scrapes a real university website and a linked PDF fee schedule to answer prospective and current student questions about programs, admissions, tuition, scholarships, and campus life.
 
