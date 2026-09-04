@@ -1,9 +1,19 @@
+# These downloads are needed because NLTK is used internally by LlamaIndex
+# SentenceSplitter for chunking text. On Streamlit Cloud, the filesystem didn't
+# give permission for NLTK to access the stopwords it needs at
+# runtime, causing a crash. Downloading it here avoids that.
+import nltk
+nltk.download('stopwords', quiet=True)
+nltk.download('punkt', quiet=True)
+
+
 import requests
 from bs4 import BeautifulSoup
 import time
 from llama_index.core import VectorStoreIndex, Settings, Document
 from llama_index.llms.groq import Groq
 from llama_index.embeddings.google_genai import GoogleGenAIEmbedding
+from llama_index.core.node_parser import SentenceSplitter
 import streamlit as st
 import pypdf
 from io import BytesIO
@@ -15,11 +25,12 @@ groq_api_key = os.environ.get("GROQ_API_KEY")
 Settings.llm = Groq(model="openai/gpt-oss-120b", api_key=groq_api_key)
 Settings.embed_model = GoogleGenAIEmbedding(model_name="gemini-embedding-2-preview", api_key=gemini_api_key)
 
-
+#
 def scrape_page(url):
     web_page = requests.get(url)
+    # remove specific elements (like nav/footer) and extract just the readable text
     soup = BeautifulSoup(web_page.text, "html.parser")
-
+    #goes through each tag and purged it content this solves the  problem of duplicated tags
     for tag in soup.find_all(["nav", "footer"]):
         tag.decompose()
 
@@ -100,7 +111,9 @@ def build_index():
     )
     documents.append(pdf_doc)
 
-    index = VectorStoreIndex.from_documents(documents, show_progress = True)
+    splitter = SentenceSplitter(chunk_size=1000, chunk_overlap=500)
+    nodes = splitter.get_nodes_from_documents(documents)
+    index = VectorStoreIndex(nodes)
     return index
 
 index = build_index()
@@ -112,6 +125,10 @@ system_prompt = (
     "Always answer using only the information provided to you, but speak naturally, as if you simply "
     "know this information yourself. Never say phrases like 'according to the document', 'based on the "
     "provided text', or 'the documents state' - just answer directly, the way a helpful person would. "
+    "Never invent or guess phone numbers, email addresses, or contact details. Only provide contact "
+    "information (phone numbers, emails) if that exact information was genuinely retrieved from the "
+    "provided context. If you don't have a specific contact detail, say the person should check the "
+    "university's official contact page instead of generating a number or email yourself. "
     "If you don't have the specific information needed to answer a question, say so honestly, and where "
     "possible, point the person to the right university contact or department instead of guessing. "
     "Keep your tone friendly and conversational, not overly formal, and feel free to organize longer "
